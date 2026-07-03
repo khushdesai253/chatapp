@@ -11,7 +11,7 @@ function Dashboard({ user, onLogout }) {
 
   useEffect(() => {
     // Connect to Socket.IO server
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io(import.meta.env.VITE_API_URL);
     setSocket(newSocket);
 
     // Register user with socket
@@ -29,7 +29,7 @@ function Dashboard({ user, onLogout }) {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/users', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(response.data);
