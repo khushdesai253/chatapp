@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const Message = require('./models/Message');
+const User = require('./models/User');
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +36,15 @@ io.on('connection', (socket) => {
   socket.on('register', (userId) => {
     userSockets[userId] = socket.id;
     console.log(`User ${userId} registered with socket ${socket.id}`);
+  });
+
+  socket.on('request_users', async (userId) => {
+    try {
+      const users = await User.find({ _id: { $ne: userId } }).select('-password');
+      socket.emit('users_list', users);
+    } catch (err) {
+      console.error('Error fetching users for socket:', err);
+    }
   });
 
   // Handle incoming messages
